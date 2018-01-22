@@ -1,3 +1,4 @@
+import java.util.Random;
 
 public class Hero {
 	
@@ -17,8 +18,8 @@ public class Hero {
 	private int health, strength, stamina, luck;
 	
 	//items
-	private Item actionItem;
-	private Item defenseItem;
+	private ActionItem actionItem;
+	private DefenseItem defenseItem;
 	
 	public Hero(String name) {
 		this.name = name;
@@ -51,35 +52,87 @@ public class Hero {
 		else return "Hero";
 	}
 	
+	//Return hero's type
+	//not sure if higher levels of program will be able to access this enumerated type
+	public affiliation getTeam(){
+		return team;
+	}
+	
+	public String getTeamAsString() {
+		if(team == affiliation.Crew) return "Crew";
+		else if (team == affiliation.Pirate) return "Pirate";
+		else return "Unknown";
+	}
+	
 	//Return the Hero's status (health, strength, stamina, luck)
 	public int[] getStatus() {
 		return new int[]{health, strength, stamina, luck};
 	}
 	
 	//
-	public void setActionItem(Item actionItem) {
+	public void setActionItem(ActionItem actionItem) {
 		this.actionItem = actionItem;
 	}
 	
-	public void setDefenseItem(Item defenseItem) {
+	public void setDefenseItem(DefenseItem defenseItem) {
 		this.defenseItem = defenseItem;
 	}
 	
 	public int attack(){
-		stamina = stamina-(strength/2);
+		int crit = 1; //crit represent critical hit
+		stamina = stamina-(strength/2); //degrade stamina on hit
 		if(actionItem != null) {
-			return (strength*stamina)+actionItem.getDamage();
+			if (new Random().nextInt(10) <= (luck+actionItem.getLuck())-1 & type != heroType.Sniper) crit = 2; //luck of 1 has 1/10 to be true
+			return ((strength*(stamina/2))+actionItem.getDamage())*crit; //attack strength is function of stamina, 
+																	//strength, item, and critical chance
 		}
-		else return (strength*stamina);
+		else {
+			if (new Random().nextInt(10) <= luck-1) crit = 2; //luck of 1 has 1/10 to be true
+			return ((strength*(stamina/2))*crit);
+		}
 	}
 	
 	public int defend(int dmg){
+		int crit = 1; 
 		if(defenseItem != null) {
-			health = health - (dmg-defenseItem.getArmor());
+			if (new Random().nextInt(10) <= (luck+actionItem.getLuck())-1 & type != heroType.Engineer) crit = 2; //luck of 1 has 1/10 to be true
+			health = health - ((dmg-defenseItem.getArmor())/crit);
 		}
-		else health = health - dmg;
+		else {
+			if (new Random().nextInt(10) <= (luck+actionItem.getLuck())-1 & type != heroType.Engineer) crit = 2; //luck of 1 has 1/10 to be true
+			health = health - dmg;
+		}
 		
 		return health;
 	}
 	
+	public int heal(){
+		int crit = 1; //crit represent critical hit
+		int critLuck = 0;
+		if(actionItem != null) critLuck = actionItem.getLuck();
+		stamina = stamina-(strength/2); //degrade stamina on hit
+		if(defenseItem != null) {
+			if (new Random().nextInt(10) <= (luck+critLuck)-1 & type != heroType.Sniper) crit = 2; //luck of 1 has 1/10 to be true
+			return (((strength*(stamina/2))+defenseItem.getHealth())*crit); //attack strength is function of stamina, 
+																	//strength, item, and critical chance
+		}
+		else {
+			if (new Random().nextInt(10) <= (luck=critLuck)-1) crit = 2; //luck of 1 has 1/10 to be true
+			return ((strength*(stamina/2))*crit);
+		}
+	}
+	
+	public void restoreStamina() {
+		if(actionItem != null) {
+			stamina = stamina + (health/2)+actionItem.getStamina();
+		}
+		else stamina = stamina + (health/2);
+	}
+	
+	public void restoreHealth() {
+		if(defenseItem != null) {
+			health = health+defenseItem.getHealth();
+		}
+	}
+		
 }
