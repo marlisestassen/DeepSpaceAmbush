@@ -1,0 +1,52 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+
+public class StartGame extends JFrame implements ActionListener{
+	
+    private JLabel gameName;
+    private JButton btnStart;
+    private JTextField playerName;
+    private JOptionPane frame = new JOptionPane();
+    
+    // initialize gui
+    public StartGame() {
+        initComponents();
+    }
+    
+    // initialize gui components
+    private void initComponents() {
+        gameName = new JLabel();
+        btnStart = new JButton();
+        
+        
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        getContentPane().setLayout(new GridLayout(7, 7));
+        getContentPane().setPreferredSize(new Dimension(400,400));
+        getContentPane().add(gameName);
+        getContentPane().add(btnStart);
+        gameName.setText("Welcome to DeepSpace Ambush");
+        gameName.setHorizontalAlignment(JLabel.CENTER);
+        gameName.setVerticalAlignment(JLabel.CENTER);
+        btnStart.setText("Start Game");
+        //registers this as a listener to receive events from the button named btnStart
+        btnStart.addActionListener(this);
+        getContentPane().add(btnStart);
+
+        pack();
+    }
+    
+    @Override
+    public void actionPerformed(ActionEvent evt) {
+    	JOptionPane.showMessageDialog(frame, "Enter your name");
+    }
+    
+    public static void main(String args[]) {
+    	StartGame startGame = new StartGame();
+    	startGame.setVisible(true);
+    }
+		
+
+}
